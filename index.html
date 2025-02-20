@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | TabCrusade</title>
+  </head>
+  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
+    <canvas id="unity-canvas" width=383 height=690 tabindex="-1" style="width: 383px; height: 690px; background: #231F20"></canvas>
+    <script src="Build/Build.loader.js"></script>
+    <script>
+	 var unityInstance;
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+
+        var canvas = document.querySelector("#unity-canvas");
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
+        canvas.style.position = "fixed";
+
+        document.body.style.textAlign = "left";
+      }
+
+        var unityInstance; // UnityInstance 전역 변수 선언
+
+        var config = {
+            dataUrl: "Build/Build.data",
+            frameworkUrl: "Build/Build.framework.js",
+            codeUrl: "Build/Build.wasm",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "DefaultCompany",
+            productName: "TabCrusade",
+            productVersion: "1.0",
+            // matchWebGLToCanvasSize: false, // Uncomment to control WebGL canvas size separately
+            // devicePixelRatio: 1, // Uncomment to override low DPI rendering
+        };
+
+        // Unity WebGL 로드 및 UnityInstance 생성
+        createUnityInstance(canvas, config).then((instance) => {
+            unityInstance = instance;
+            console.log("Unity WebGL Loaded Successfully!");
+			sendMessageToUnity();
+        }).catch((err) => {
+            console.error("Unity WebGL Failed to Load:", err);
+        });
+
+        // JavaScript에서 Unity로 메시지 보내는 함수
+        function sendMessageToUnity() {
+            if (unityInstance) {
+                unityInstance.SendMessage('LoadingScene', 'OnReceivedUser', '');
+            } else {
+                console.error("Unity WebGL is not initialized yet.");
+            }
+        }
+    </script>
+  </body>
+</html>
