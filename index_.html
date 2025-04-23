@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TabCrusade</title>
+  </head>
+  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
+      <canvas id="unity-canvas" width=383 height=690 tabindex="-1" style="width: 383px; height: 690px; background: #231F20"></canvas>
+      <script src="Build/Build.loader.js"></script>
+      <script src="https://telegram.org/js/telegram-web-app.js"></script>
+      <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      <script>
+          console.log('starting app');
+          let funnelData = null;
+          var unityCanvas = document.querySelector("#unity-canvas");
+          var unityInstance;
+          var config = {
+              dataUrl: "Build/Build.data",
+              frameworkUrl: "Build/Build.framework.js",
+              codeUrl: "Build/Build.wasm",
+              streamingAssetsUrl: "StreamingAssets",
+              companyName: "DefaultCompany",
+              productName: "TabCrusade",
+              productVersion: "1.0",
+              // matchWebGLToCanvasSize: false, // Uncomment to control WebGL canvas size separately
+              // devicePixelRatio: 1, // Uncomment to override low DPI rendering
+          };
+          if (window.Telegram) {
+              // Telegram Web App 초기화
+              function initTelegramWebApp() {
+                  // Telegram WebApp 초기화
+                  const tg = window.Telegram.WebApp;
+                  //const AdController = window.Adsgram.init({ blockId: "5968", debug: true, debugBannerType:  "RewardedVideo"});
+                  // enableClosingConfirmation 설정 활성화
+                  tg.enableClosingConfirmation();
+                  tg.disableVerticalSwipes();
+
+                  // 닫기 이벤트 핸들러 설정
+                  tg.onEvent('closingConfirmation', function () {
+                      console.log('Closing confirmation is enabled.');
+                  });
+
+                  tg.expand();
+                  console.log('tg ready');
+                  // 미니앱 준비 완료
+                  tg.ready();
+                  let initData = Telegram ? Telegram.WebApp.initData : null;
+                  if (initData) {
+                      try {
+                          const parsedInitData = new URLSearchParams(initData);
+                          const userJsonStr = parsedInitData.get('user');
+                          const user = JSON.parse(userJsonStr);
+                          const params = new URLSearchParams(window.location.search);
+                          let refCode = params.get('tgWebAppStartParam') ?? '';
+                          
+                          console.log(`refCode: ${refCode}`);
+                          funnelData = {
+                              id: Number(user.id),
+                              username: user.username ?? '',
+                              language_code: user.language_code ?? '',
+                              is_premium: user.is_premium ?? false,
+                              ref_code: '' ?? '0'
+                          };
+                          console.log('TelegramUser:', funnelData);
+
+                      } catch { }
+                  } else {
+                      console.log('TelegramUser: null');
+                  }
+              }
+
+              window.addEventListener('load', initTelegramWebApp);
+          } else {
+              console.log('Telegram is null');
+          }
+         
+          createUnityInstance(unityCanvas, config).then((instance) => {
+              unityInstance = instance;
+              console.log("Unity WebGL Loaded Successfully!");
+              sendMessageToUnity();
+          }).catch((err) => {
+              console.error("Unity WebGL Failed to Load:", err);
+          });
+
+
+          function sendMessageToUnity() {
+              if (unityInstance) {
+                  console.log('funnelData = ' + funnelData);
+                  const strFunnel = JSON.stringify(funnelData)
+                  console.log('strFunnel = ' + strFunnel);
+                  unityInstance.SendMessage('LoadingScene', 'OnReceivedUser', strFunnel);
+              } else {
+                  console.error("Unity WebGL is not initialized yet.");
+              }
+          }
+
+
+          SetScreen();
+          function SetScreen() {
+              if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                  var meta = document.createElement('meta');
+                  meta.name = 'viewport';
+                  meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+                  document.head.appendChild(meta);
+
+                  var canvas = unityCanvas;
+                  canvas.style.width = "100%";
+                  canvas.style.height = "100%";
+                  canvas.style.position = "fixed";
+                  canvas.style.left = "0";
+                  canvas.style.top = "0";
+                  document.body.style.margin = "0";
+                  document.body.style.overflow = "hidden";
+
+                  if (Telegram.WebView) {
+                      Telegram.WebView.onEvent('viewport_changed', function (eventType, eventData) {
+                          const vp = window.visualViewport;
+                          if (eventData.is_state_stable) {
+                              if ((vp.height - vp.offsetTop) < eventData.height) {
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  unityCanvas.style.width = "100%";
+                                  unityCanvas.style.height = "100%";
+                                  unityCanvas.style.position = "fixed";
+                              }
+                          }
+                      });
+                  }
+              } else {
+                  function centerElement() {
+                      var originalWidth = 1080;
+                      var originalHeight = 2400;
+                      var aspectRatio = originalWidth / originalHeight;
+
+                      var windowWidth = window.innerWidth;
+                      var windowHeight = window.innerHeight;
+
+                      var canvas = unityCanvas;
+                      if (windowWidth / windowHeight > aspectRatio) {
+                          canvas.style.width = windowHeight * aspectRatio + "px";
+                          canvas.style.height = windowHeight + "px";
+                      } else {
+                          canvas.style.width = windowWidth + "px";
+                          canvas.style.height = windowWidth / aspectRatio + "px";
+                      }
+
+                      canvas.style.position = "fixed";
+                      canvas.style.top = "50%";
+                      canvas.style.left = "50%";
+                      canvas.style.transform = "translate(-50%, -50%)";
+                  }
+
+                  centerElement();
+                  window.addEventListener("resize", centerElement);
+              }
+          }
+          function ShowAd() {
+              AdController.show().then((result) => {
+                  // user watch ad till the end or close it in interstitial format
+                  // your code to reward user for rewarded format
+                  alert('Reward');
+              }).catch((result) => {
+                  // user get error during playing ad
+                  // do nothing or whatever you want
+                  alert(JSON.stringify(result, null, 4));
+              })
+          }
+      </script>
+  </body>
+</html>
