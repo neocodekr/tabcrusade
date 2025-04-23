@@ -30,18 +30,18 @@
       var warningBanner = document.querySelector("#unity-warning");
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "Build/build.loader.js";
+      var loaderUrl = buildUrl + "/build.loader.js";
       var config = {
-        dataUrl: buildUrl + "Build/build.data",
-        frameworkUrl: buildUrl + "Build/build.framework.js",
-        codeUrl: buildUrl + "Build/build.wasm",
+        dataUrl: buildUrl + "/build.data",
+        frameworkUrl: buildUrl + "/build.framework.js",
+        codeUrl: buildUrl + "/build.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "ButterSoft",
         productName: "Link",
         productVersion: "1.0.1",
       };
 
-  SetScreen();
+ // SetScreen();
           function SetScreen() {
               if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
                   var meta = document.createElement('meta');
