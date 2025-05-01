@@ -15,22 +15,14 @@
     </div>
     <script> 
      console.log('start');
-      if ( liff ) {
-        console.log('start liff');
-        ConnectLiff();
-      } else {
-        console.log('start no liff');
-        LoadApp();
-      }
+      ConnectLiff();
+      OnLoadUnity();
       function ConnectLiff() {
-      liff.init({ liffId: '2007317092-WoJBR1mY',})
+      liff.init({ liffId: '2007317092-WoJBR1mY'})
         .then(() => {
           if (!liff.isLoggedIn()) {
             liff.login();
-          } else {
-            OnLoadUnity();
           }
-        
         })
         .catch((err) => {
           // Error happens during initialization
@@ -47,7 +39,6 @@
                   myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
                   liff.getProfile().then(profile => {
                     let profileJson = JSON.stringify(profile, null, 2);
-                    myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
                     myGameInstance.SendMessage('Web3Manager', 'OnLiffUserData', profileJson);
                     console.log('liff profile (stringified):', JSON.stringify(profileJson, null, 2));
                   });
