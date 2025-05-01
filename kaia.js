@@ -44,31 +44,9 @@ async function initializeSDK( cId ) {
   }
 }
 
-window.ConnectWallet = async function(cid, lid ) {
-  try {
-    alert('cid = ' + cid + ',' + 'lif = ' + lid);
-    if ( liff ) {
-      liff.init({ liffId: lid,})
-        .then(() => {
-          if (!liff.isLoggedIn()) {
-            liff.login();
 
-          } else {
-            const idToken = liff.getIDToken();
-            console.log('getIDToken = ' + idToken);
-            const accessToken = liff.getAccessToken();
-            console.log('accessToken = ' + accessToken);
-            console.log('liff lan = ' + liff.getAppLanguage());
-            console.log('liff profile' + liff.getProfile());
-          }
-         
-        })
-        .catch((err) => {
-          // Error happens during initialization
-          console.log(err.code, err.message);
-        });
-    }
-  
+window.ConnectWallet = async function(cid ) {
+  try {
     if (!sdk) {
       const initialized = await initializeSDK(cid);
       if (!initialized) 

@@ -1,208 +1,143 @@
 <!DOCTYPE html>
 <html lang="en-us">
- <head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Unity WebGL Player</title>
-       <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-   <script src="https://static.kaiawallet.io/js/dapp-portal-sdk.js"></script>
-   
-   <style>
-     body { margin: 0; padding: 0; }
-     #unity-container { width: 100%; height: 100%; position: absolute; }
-     #unity-canvas { width: 100%; height: 100%; background: #231F20; }
-     #unity-loading-bar { display: none; }
-     #unity-progress-bar-empty { width: 141px; height: 18px; margin-top: 10px; background: url('Build/minidapp.progress-bar-empty-dark.png') no-repeat center; }
-     #unity-progress-bar-full { width: 0%; height: 18px; margin-top: 10px; background: url('Build/minidapp.progress-bar-full-dark.png') no-repeat center; }
-   </style>
- </head>
- <body>
-   <div id="unity-container">
-     <canvas id="unity-canvas"></canvas>
-     <div id="unity-loading-bar">
-       <div id="unity-progress-bar-empty">
-         <div id="unity-progress-bar-full"></div>
-       </div>
-     </div>
-   </div>
-
-   <!-- 버튼 UI 추가 -->
-   <div style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
-     <button onclick="initializeSDK()" style="padding: 10px; font-size: 14px; margin-right: 10px;">Initialize SDK</button>
-     <button onclick="ConnectWallet()" style="padding: 10px; font-size: 14px; margin-right: 10px;">Connect Wallet</button>
-     <button onclick="GetBalance()" style="padding: 10px; font-size: 14px;">Get Balance</button>
-	 <button onclick="DisconnectWallet()" style="padding: 10px; font-size: 14px;">DisconnectWallet</button>
-	 <button onclick="LiffLogin()" style="padding: 10px; font-size: 14px;">Liff</button>
-   </div>
-
-   <script src="Build/minidapp.loader.js"></script>
-   <script>
-     var sdk = null;
-     var connectedAddress = null;
-     var myGameInstance = null;
-
-     var Module = {
-       onRuntimeInitialized: function() {
-         console.log("Runtime initialized");
-       },
-       env: {
-         MintToken: function(amount) {
-           window.MintToken(amount);
-         },
-         GetBalance: function() {
-           window.GetBalance();
-         },
-         ConnectWallet: function() {
-           window.ConnectWallet();
-         },
-         DisconnectWallet: function() {
-           window.DisconnectWallet();
-         },
-         GetConnectedAddress: function() {
-           var address = window.GetConnectedAddress();
-           var bufferSize = lengthBytesUTF8(address) + 1;
-           var buffer = _malloc(bufferSize);
-           stringToUTF8(address, buffer, bufferSize);
-           return buffer;
-         }
-       }
-     };
-
-     async function initializeSDK() {
-       try {
-         sdk = await DappPortalSDK.init({
-           clientId: 'aaeabd88-7885-4772-bc03-0c6f9659d9eb', // 실제 클라이언트 ID로 대체
-           chainId: '1001'
-         });
-         console.log("SDK initialized");
-         alert("SDK Initialized");
-         return true;
-       } catch (error) {
-         console.error("SDK init error:", error);
-         alert("SDK Initialization Failed");
-         return false;
-       }
-     }
-
-     window.ConnectWallet = async function() {
-       try {
-         if (!sdk) {
-           const initialized = await initializeSDK();
-           if (!initialized) return null;
-         }
-         console.log("connect wallet");
-         const provider = sdk.getWalletProvider();
-         console.log("connect wallet2");
-         const accounts = await provider.request({ method: 'kaia_requestAccounts' });
-         console.log("connect wallet3");
-         if (accounts && accounts.length > 0) {
-           connectedAddress = accounts[0];
-		   console.log('address = ' + connectedAddress );
-       //    if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnWalletConnected', connectedAddress);
-         }
-       } catch (error) {
-        // if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnWalletError', error.message);
-       }
-     }
-	window.LiffLogin = async function() {
-		liff.init({ liffId: '2007317092-WoJBR1mY',})
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Link: AdventureStory | Mini Dapp</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://static.kaiawallet.io/js/dapp-portal-sdk.js"></script>
+    <script src="kaia.js"></script>
+    <script src="util.js"></script>
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=360 height=640 tabindex="-1"></canvas>
+    </div>
+    <script> 
+      if ( liff ) {
+        ConnectLiff();
+      } else {
+        LoadApp();
+      }
+  window.ConnectLiff = async function() {
+  
+      liff.init({ liffId: '2007317092-WoJBR1mY',})
         .then(() => {
           if (!liff.isLoggedIn()) {
             liff.login();
-		console.log('no logged');	 
+
           } else {
-		  console.log('logged');
-		    const idToken = liff.getIDToken();
-			  console.log('getIDToken = ' + idToken);
-			  const accessToken = liff.getAccessToken();
-			  console.log('accessToken = ' + accessToken);
-			  console.log('liff lan = ' + liff.getAppLanguage());
-			liff.getProfile().then(profile => {
-				  console.log('liff profile (stringified):', JSON.stringify(profile, null, 2));
-				});
-			  }
-       
+            const idToken = liff.getIDToken();
+            console.log('getIDToken = ' + idToken);
+            const accessToken = liff.getAccessToken();
+            console.log('accessToken = ' + accessToken);
+            console.log('liff lan = ' + liff.getAppLanguage());
+            console.log('liff profile' + liff.getProfile());
+            OnLoadUnity();
+          }
+        
         })
         .catch((err) => {
           // Error happens during initialization
           console.log(err.code, err.message);
         });
-	}
-     window.DisconnectWallet = async function() {
-       try {
-         if (!sdk) {
-           console.error("SDK not initialized");
-           return;
-         }
+    }
+  function LoadApp() {
+    var script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+          createUnityInstance(canvas, config, (progress) => {
+                }).then((unityInstance) => {
+                  myGameInstance = unityInstance;
+                  myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
+                  liff.getProfile().then(profile => {
+                    let profile = JSON.stringify(profile, null, 2);
+                    myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
+                    console.log('liff profile (stringified):', JSON.stringify(profile, null, 2));
+                  });
+                }).catch((message) => {
+                  alert(message);
+                });
+              };
+       document.body.appendChild(script);
+  }
+    var unityCanvas = document.querySelector("#unity-canvas");
 
-         const provider = sdk.getWalletProvider();
-         await provider.disconnect();
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/build.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/build.data",
+        frameworkUrl: buildUrl + "/build.framework.js",
+        codeUrl: buildUrl + "/build.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "ButterSoft",
+        productName: "Link",
+        productVersion: "1.0.1",
+      };
+      console.log('os = ' + getOS());
+      SetScreen();
+      function SetScreen() {
+              if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                  var meta = document.createElement('meta');
+                  meta.name = 'viewport';
+                  meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+                  document.head.appendChild(meta);
 
-         connectedAddress = null;
-         if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnWalletDisconnected');
-         console.log("Wallet disconnected successfully");
-       } catch (error) {
-         console.error("Disconnect error:", error);
-         if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnWalletError', "Disconnect failed: " + error.message);
-       }
-     }
+                  var canvas = unityCanvas;
+                  canvas.style.width = "100%";
+                  canvas.style.height = "100%";
+                  canvas.style.position = "fixed";
+                  canvas.style.left = "0";
+                  canvas.style.top = "0";
+                  document.body.style.margin = "0";
+                  document.body.style.overflow = "hidden";
 
-     window.GetConnectedAddress = function() {
-       return connectedAddress || '';
-     }
+                  /*if (Telegram.WebView) {
+                      Telegram.WebView.onEvent('viewport_changed', function (eventType, eventData) {
+                          const vp = window.visualViewport;
+                          if (eventData.is_state_stable) {
+                              if ((vp.height - vp.offsetTop) < eventData.height) {
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  unityCanvas.style.width = "100%";
+                                  unityCanvas.style.height = "100%";
+                                  unityCanvas.style.position = "fixed";
+                              }
+                          }
+                      });
+                    
+                  }  */
+              } else {
+                  function centerElement() {
+                      var originalWidth = 1080;
+                      var originalHeight = 2400;
+                      var aspectRatio = originalWidth / originalHeight;
 
-     window.MintToken = async function(amount) {
-       try {
-         const provider = sdk.getWalletProvider();
+                      var windowWidth = window.innerWidth;
+                      var windowHeight = window.innerHeight;
 
-         const mintSignature = '0xa0712d68';
-         const amountHex = amount.toString(16).padStart(64, '0');
-         const data = mintSignature + amountHex;
+                      var canvas = unityCanvas;
+                      if (windowWidth / windowHeight > aspectRatio) {
+                          canvas.style.width = windowHeight * aspectRatio + "px";
+                          canvas.style.height = windowHeight + "px";
+                      } else {
+                          canvas.style.width = windowWidth + "px";
+                          canvas.style.height = windowWidth / aspectRatio + "px";
+                      }
 
-         const tx = {
-           from: connectedAddress,
-           to: '0x099D7feC4f799d1749adA8815eB21375E13E0Ddb',
-           value: '0x0',
-           data: data,
-           gas: '0x4C4B40'
-         };
+                      canvas.style.position = "fixed";
+                      canvas.style.top = "50%";
+                      canvas.style.left = "50%";
+                      canvas.style.transform = "translate(-50%, -50%)";
+                  }
 
-         const txHash = await provider.request({
-           method: 'kaia_sendTransaction',
-           params: [tx]
-         });
+                  centerElement();
+                  window.addEventListener("resize", centerElement);
+              }
+          }
+    
 
-         if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnMintSuccess', txHash);
-         GetBalance();
-       } catch (error) {
-         if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnMintError', error.message);
-       }
-     }
-
-     window.GetBalance = async function() {
-       try {
-         const provider = sdk.getWalletProvider();
-
-         const balanceSignature = '0x70a08231';
-         const addressParam = connectedAddress.substring(2).padStart(64, '0');
-         const data = balanceSignature + addressParam;
-
-         const result = await provider.request({
-           method: 'kaia_call',
-           params: [{
-             from: connectedAddress,
-             to: '0x099D7feC4f799d1749adA8815eB21375E13E0Ddb',
-             data: data
-           }, 'latest']
-         });
-
-         const balance = parseInt(result, 16);
-         if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnBalanceReceived', balance.toString());
-       } catch (error) {
-         if (myGameInstance) myGameInstance.SendMessage('Web3Manager', 'OnBalanceError', error.message);
-       }
-     }
-
-   </script>
- </body>
+    </script>
+  </body>
 </html>
