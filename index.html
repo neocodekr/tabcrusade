@@ -19,20 +19,12 @@
       } else {
         LoadApp();
       }
-  window.ConnectLiff = async function() {
-  
+      function ConnectLiff() {
       liff.init({ liffId: '2007317092-WoJBR1mY',})
         .then(() => {
           if (!liff.isLoggedIn()) {
             liff.login();
-
           } else {
-            const idToken = liff.getIDToken();
-            console.log('getIDToken = ' + idToken);
-            const accessToken = liff.getAccessToken();
-            console.log('accessToken = ' + accessToken);
-            console.log('liff lan = ' + liff.getAppLanguage());
-            console.log('liff profile' + liff.getProfile());
             OnLoadUnity();
           }
         
@@ -51,9 +43,10 @@
                   myGameInstance = unityInstance;
                   myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
                   liff.getProfile().then(profile => {
-                    let profile = JSON.stringify(profile, null, 2);
+                    let profileJson = JSON.stringify(profile, null, 2);
                     myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
-                    console.log('liff profile (stringified):', JSON.stringify(profile, null, 2));
+                    myGameInstance.SendMessage('Web3Manager', 'OnLiffUserData', profileJson);
+                    console.log('liff profile (stringified):', JSON.stringify(profileJson, null, 2));
                   });
                 }).catch((message) => {
                   alert(message);

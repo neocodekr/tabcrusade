@@ -44,14 +44,15 @@ async function initializeSDK( cId ) {
   }
 }
 
-
-window.ConnectWallet = async function(cid ) {
+window.ConnectWallet = async function(cId) {
   try {
+    alert('aaeabd88-7885-4772-bc03-0c6f9659d9eb');
+    cId = 'aaeabd88-7885-4772-bc03-0c6f9659d9eb';
     if (!sdk) {
-      const initialized = await initializeSDK(cid);
+      const initialized = await initializeSDK(cId);
       if (!initialized) 
       {
-        console.log('dapp failed initialize');
+        alert('fail');
         return null;
       }
     }
@@ -76,10 +77,7 @@ window.DisconnectWallet = async function() {
       console.error("SDK not initialized");
       return;
     }
-    if (liff.isLoggedIn()) {
-      liff.logout();
-      window.location.reload();
-    }
+
     const provider = sdk.getWalletProvider();
     await provider.disconnect();
 
