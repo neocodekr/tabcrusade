@@ -15,14 +15,7 @@
     </div>
     <script> 
          console.log('start');
-     if (window.location.search) {
-        console.log("쿼리 스트링이 있습니다.");
-  
-      } else {
-        console.log("쿼리 스트링이 없습니다.");
-         ConnectLiff();
-      }
-     
+   
       function ConnectLiff() {
         liff.init({ liffId: '2007317092-WoJBR1mY'})
           .then(() => {
@@ -117,6 +110,14 @@
               }).then((unityInstance) => {
                 myGameInstance = unityInstance;
                 myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
+                if (window.location.search) {
+                  console.log("쿼리 스트링이 있습니다.");
+            
+                } else {
+                  console.log("쿼리 스트링이 없습니다.");
+                  ConnectLiff();
+                }
+              
               }).catch((message) => {
                 alert(message);
               });
