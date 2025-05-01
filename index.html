@@ -117,7 +117,9 @@
 			  const accessToken = liff.getAccessToken();
 			  console.log('accessToken = ' + accessToken);
 			  console.log('liff lan = ' + liff.getAppLanguage());
-			  console.log('liff profile' + liff.getProfile());
+			liff.getProfile().then(profile => {
+				  console.log('liff profile (stringified):', JSON.stringify(profile, null, 2));
+				});
 			  }
        
         })
