@@ -14,40 +14,27 @@
       <canvas id="unity-canvas" width=360 height=640 tabindex="-1"></canvas>
     </div>
     <script> 
-     console.log('start');
-      ConnectLiff();
-      OnLoadUnity();
+         console.log('start');
+     if (window.location.search) {
+        console.log("쿼리 스트링이 있습니다.");
+  
+      } else {
+        console.log("쿼리 스트링이 없습니다.");
+         ConnectLiff();
+      }
+     
       function ConnectLiff() {
-      liff.init({ liffId: '2007317092-WoJBR1mY'})
-        .then(() => {
-          if (!liff.isLoggedIn()) {
-            liff.login();
-          }
-        })
-        .catch((err) => {
-          // Error happens during initialization
-          console.log(err.code, err.message);
-        });
-    }
-  function LoadApp() {
-    var script = document.createElement("script");
-        script.src = loaderUrl;
-        script.onload = () => {
-          createUnityInstance(canvas, config, (progress) => {
-                }).then((unityInstance) => {
-                  myGameInstance = unityInstance;
-                  myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
-                  liff.getProfile().then(profile => {
-                    let profileJson = JSON.stringify(profile, null, 2);
-                    myGameInstance.SendMessage('Web3Manager', 'OnLiffUserData', profileJson);
-                    console.log('liff profile (stringified):', JSON.stringify(profileJson, null, 2));
-                  });
-                }).catch((message) => {
-                  alert(message);
-                });
-              };
-       document.body.appendChild(script);
-  }
+        liff.init({ liffId: '2007317092-WoJBR1mY'})
+          .then(() => {
+            if (!liff.isLoggedIn()) {
+              liff.login();
+            }
+          })
+          .catch((err) => {
+            // Error happens during initialization
+            console.log(err.code, err.message);
+          });
+      }
     var unityCanvas = document.querySelector("#unity-canvas");
 
       var container = document.querySelector("#unity-container");
@@ -123,7 +110,19 @@
                   window.addEventListener("resize", centerElement);
               }
           }
-    
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+              }).then((unityInstance) => {
+                myGameInstance = unityInstance;
+                myGameInstance.SendMessage('Web3Manager', 'OnCountry', getLanguage());
+              }).catch((message) => {
+                alert(message);
+              });
+            };
+
+      document.body.appendChild(script);
 
     </script>
   </body>
