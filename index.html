@@ -109,13 +109,16 @@
         .then(() => {
           if (!liff.isLoggedIn()) {
             liff.login();
-			   const idToken = liff.getIDToken();
+		console.log('no logged');	 
+          } else {
+		  console.log('logged');
+		    const idToken = liff.getIDToken();
 			  console.log('getIDToken = ' + idToken);
 			  const accessToken = liff.getAccessToken();
 			  console.log('accessToken = ' + accessToken);
 			  console.log('liff lan = ' + liff.getAppLanguage());
 			  console.log('liff profile' + liff.getProfile());
-          }
+			  }
        
         })
         .catch((err) => {
