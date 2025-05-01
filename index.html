@@ -14,9 +14,12 @@
       <canvas id="unity-canvas" width=360 height=640 tabindex="-1"></canvas>
     </div>
     <script> 
+     console.log('start');
       if ( liff ) {
+        console.log('start liff');
         ConnectLiff();
       } else {
+        console.log('start no liff');
         LoadApp();
       }
       function ConnectLiff() {
